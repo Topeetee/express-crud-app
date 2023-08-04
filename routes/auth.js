@@ -51,6 +51,16 @@ router.post("/register", async (req, res) => {
     // Check if user already exists in the database
     const existingUser = await User.findOne({ username });
     const existingEmail = await User.findOne({ email })
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    const isValidPassword = passwordPattern.test(password);
+
+    if (isValidPassword) {
+      console.log('Password is valid.');
+    } else {
+      console.log('Password is not valid.');
+    }
+
     if (existingUser) {
       return res.status(409).json({ error: 'User already exists' });
     }
@@ -142,14 +152,14 @@ router.post("/forgot/:id", async (req, res) => {
             pass: process.env.Pass,
           },
         });
-  
+
         const mailOptions = {
           from: process.env.Email,
           to,
           subject,
           text,
         };
-  
+
         // Send the email
         transporter.sendMail(mailOptions, (error, info) => {
           if (error) {
@@ -162,7 +172,7 @@ router.post("/forgot/:id", async (req, res) => {
         });
       });
     }
-  //   // Send an email to the user with the password reset link
+    //   // Send an email to the user with the password reset link
     await sendEmail(email, "password Reset", `Click the link to reset your password: ${link}`);
 
 
@@ -200,7 +210,7 @@ router.post("/reset/:id/:token", async (req, res) => {
     const user = await User.findById(id);
 
     const payload = jwt.verify(token, process.env.secret_key);
-    if(!payload){
+    if (!payload) {
       res.send("couldn't verify token")
     }
     if (payload.userId !== id) {
