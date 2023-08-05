@@ -5,7 +5,7 @@ const nodemailer = require('nodemailer');
 const jwt = require("jsonwebtoken");
 const validator = require('validator');
 const User = require("../models/auth"); // Assuming "auth.js" contains the User model
-const { verifyUser } = require("../authUtils");
+const { verifyUser } = require("../utils/authUtils");
 
 
 router.post("/register", async (req, res) => {
