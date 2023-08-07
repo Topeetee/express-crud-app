@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - your-branch-name
+      main
 
 jobs:
   test-your-code:
