@@ -122,7 +122,6 @@ router.post('/login', async (req, res) => {
 });
 
 router.post("/forgot/:id", async (req, res) => {
-  // res.send("working")
   const user = await User.findById(req.params.id);
   const { email } = req.body;
   try {
@@ -130,16 +129,12 @@ router.post("/forgot/:id", async (req, res) => {
       res.send("User not registered");
       return;
     }
-
     const payload = {
       userId: user._id,
       username: user.username,
     };
-
     const token = jwt.sign(payload, process.env.secret_key, { expiresIn: '2m' });
     const link = `http://localhost:3000/reset/${user._id}/${token}`;
-
-
     async function sendEmail(to, subject, text) {
       return new Promise((resolve, reject) => {
         // Configure the transporter with Gmail SMTP settings
@@ -152,14 +147,12 @@ router.post("/forgot/:id", async (req, res) => {
             pass: process.env.Pass,
           },
         });
-
         const mailOptions = {
           from: process.env.Email,
           to,
           subject,
           text,
         };
-
         // Send the email
         transporter.sendMail(mailOptions, (error, info) => {
           if (error) {
@@ -174,8 +167,6 @@ router.post("/forgot/:id", async (req, res) => {
     }
     //   // Send an email to the user with the password reset link
     await sendEmail(email, "password Reset", `Click the link to reset your password: ${link}`);
-
-
     res.send("check mail for reset link");
   } catch (error) {
     res.status(500).send(error);
@@ -208,7 +199,6 @@ router.post("/reset/:id/:token", async (req, res) => {
   try {
     // Find the user by ID
     const user = await User.findById(id);
-
     const payload = jwt.verify(token, process.env.secret_key);
     if (!payload) {
       res.send("couldn't verify token")
@@ -217,16 +207,12 @@ router.post("/reset/:id/:token", async (req, res) => {
       return res.status(400).send('Invalid user ID in token');
     }
     // Update the user's password with the new password
-    // You should hash the new password before updating
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
-
     // Save the updated user document
     await user.save();
-
     res.send("password reset successfully");
   } catch (error) {
-    // Handle token verification error or other errors
     res.status(400).send('Password reset failed');
   }
 });
