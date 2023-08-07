@@ -1,0 +1,15 @@
+on:
+  push:
+    branches:
+      main
+
+jobs:
+  test-your-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2  # Use a newer version of checkout action
+        with:
+          ref: ${{ github.ref }}   # Checkout the specific branch
+
+ 
